@@ -46,23 +46,42 @@
 
   if (dot && matchMedia('(hover: hover) and (pointer: fine)').matches) {
     const root = document.documentElement;
-
-    // A modal <dialog> paints in the top layer, above any z-index, so the dot
-    // has to live there too. Re-raising keeps it above newly opened ones.
-    const raise = () => {
-      try { dot.hidePopover(); } catch {}
-      try { dot.showPopover(); } catch {}
+    let x = -100;
+    let y = -100;
+    const put = () => {
+      dot.style.transform = `translate3d(${x}px, ${y}px, 0)`;
     };
-    if ('showPopover' in dot) {
-      dot.setAttribute('popover', 'manual');
-      raise();
-      new MutationObserver((records) => {
-        if (records.some((r) => (r.target as HTMLDialogElement).open)) raise();
-      }).observe(document.body, { subtree: true, attributeFilter: ['open'] });
+
+    // Normally the dot is an ordinary fixed element. Only while a modal
+    // <dialog> is open does it need the top layer, since a dialog paints above
+    // every z-index; staying out of it the rest of the time keeps behaviour
+    // plain and predictable.
+    const canPop = 'showPopover' in dot;
+    let popped = false;
+    const anyDialogOpen = () => !!document.querySelector('dialog[open]');
+    const sync = () => {
+      if (!canPop) return;
+      const want = anyDialogOpen();
+      if (want === popped) return;
+      try {
+        if (want) {
+          dot.setAttribute('popover', 'manual');
+          dot.showPopover();
+        } else {
+          dot.hidePopover();
+          dot.removeAttribute('popover');
+        }
+        popped = want;
+      } catch {}
+      put();
+    };
+    if (canPop) {
+      new MutationObserver(sync).observe(document.body, {
+        subtree: true,
+        attributeFilter: ['open'],
+      });
     }
 
-    // Everything past the transform write is guarded, so an ordinary move never
-    // touches the class list or walks the tree.
     let shown = false;
     let lastTarget: EventTarget | null = null;
     let overText = false;
@@ -71,7 +90,9 @@
       'pointermove',
       (e) => {
         if (e.pointerType !== 'mouse') return;
-        dot.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0)`;
+        x = e.clientX;
+        y = e.clientY;
+        put();
         if (!shown) {
           shown = true;
           root.classList.add('has-cursor');
@@ -87,13 +108,28 @@
       { passive: true }
     );
 
-    document.addEventListener('mouseleave', () => {
+    // Re-assert on press and release: some browsers disturb the dot mid-click.
+    for (const ev of ['pointerdown', 'pointerup', 'pointercancel', 'click'] as const) {
+      addEventListener(
+        ev,
+        (e) => {
+          const p = e as PointerEvent;
+          if (p.clientX || p.clientY) {
+            x = p.clientX;
+            y = p.clientY;
+          }
+          put();
+        },
+        { passive: true, capture: true }
+      );
+    }
+
+    const hide = () => {
       shown = false;
       root.classList.remove('has-cursor');
-    });
-    addEventListener('blur', () => {
-      shown = false;
-      root.classList.remove('has-cursor');
-    });
+    };
+    document.addEventListener('mouseleave', hide);
+    addEventListener('blur', hide);
+    put();
   }
 </script>
