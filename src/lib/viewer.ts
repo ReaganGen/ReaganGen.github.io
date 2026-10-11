@@ -174,8 +174,8 @@ export async function mountGLB(el: HTMLElement, src: string, opts: GLBOptions = 
     return done;
   };
 
-  // Hold the parts apart until the card is genuinely on screen, so the
-  // assembly plays for someone scrolling to it rather than finishing unseen.
+  // Hold the parts apart until the card is 35% on screen, so the assembly
+  // plays for someone scrolling to it rather than finishing unseen.
   let settled = !parts.length;
   let playing = false;
   for (const p of parts) p.node.position.copy(p.from);
@@ -187,12 +187,12 @@ export async function mountGLB(el: HTMLElement, src: string, opts: GLBOptions = 
   if (parts.length) {
     const starter = new IntersectionObserver(
       ([e]) => {
-        if (e.intersectionRatio < 0.2) return;
+        if (e.intersectionRatio < 0.35) return;
         starter.disconnect();
         t0 = 0;
         playing = true;
       },
-      { threshold: 0.2 }
+      { threshold: 0.35 }
     );
     starter.observe(el);
   }
