@@ -143,8 +143,8 @@ img { max-width: 100%; display: block; }
 .card {
   position: relative;
   background: var(--glass);
-  -webkit-backdrop-filter: blur(34px) saturate(190%) brightness(1.05);
-  backdrop-filter: blur(34px) saturate(190%) brightness(1.05);
+  -webkit-backdrop-filter: blur(22px) saturate(180%) brightness(1.04);
+  backdrop-filter: blur(22px) saturate(180%) brightness(1.04);
   border: 0;
   border-radius: var(--radius-lg);
   padding: 28px;
@@ -157,7 +157,8 @@ img { max-width: 100%; display: block; }
     0 20px 48px -28px var(--glass-shade);
   transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.4s;
 }
-/* light bending at the edge: a second, stronger backdrop pass masked to a ring */
+/* Edge highlight. Painted, not filtered: a second backdrop-filter here forced
+   the rim to re-rasterise on every nearby repaint and made it shimmer. */
 .card::before {
   content: '';
   position: absolute;
@@ -165,8 +166,14 @@ img { max-width: 100%; display: block; }
   border-radius: inherit;
   pointer-events: none;
   padding: 12px;
-  -webkit-backdrop-filter: blur(5px) brightness(1.12) saturate(140%);
-  backdrop-filter: blur(5px) brightness(1.12) saturate(140%);
+  background: linear-gradient(
+    168deg,
+    var(--glass-spec),
+    color-mix(in srgb, var(--glass-spec) 18%, transparent) 38%,
+    transparent 62%,
+    var(--glass-under)
+  );
+  opacity: 0.4;
   -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
   -webkit-mask-composite: xor;
   mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
