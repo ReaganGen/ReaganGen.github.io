@@ -21,13 +21,6 @@
     will-change: transform;
   }
   :global(html.has-cursor) #cursor { opacity: 1; }
-  /* over something clickable it sits a little larger and firmer */
-  :global(html.cursor-hot) #cursor {
-    width: 34px;
-    height: 34px;
-    margin: -17px 0 0 -17px;
-    background: color-mix(in srgb, var(--ink) 16%, transparent);
-  }
   :global(html.cursor-none) #cursor { opacity: 0; }
 
   @media (hover: hover) and (pointer: fine) {
@@ -45,7 +38,6 @@
 
   if (dot && fine.matches) {
     const root = document.documentElement;
-    const hot = 'a, button, [role="button"], summary, label, .tile, .dot';
     const text = 'input, textarea';
 
     addEventListener(
@@ -54,14 +46,11 @@
         if (e.pointerType !== 'mouse') return;
         dot.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0)`;
         root.classList.add('has-cursor');
-        const el = e.target as Element;
-        root.classList.toggle('cursor-hot', !!el.closest?.(hot));
-        root.classList.toggle('cursor-none', !!el.closest?.(text));
+        root.classList.toggle('cursor-none', !!(e.target as Element).closest?.(text));
       },
       { passive: true }
     );
 
-    addEventListener('pointerdown', () => root.classList.add('cursor-hot'));
     document.addEventListener('mouseleave', () => root.classList.remove('has-cursor'));
     addEventListener('blur', () => root.classList.remove('has-cursor'));
   }
