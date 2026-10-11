@@ -40,30 +40,11 @@ const peek = projects.map((p) => ({
     </div>
   </div>
 
-  <i class="ptr" id="ptr" aria-hidden="true"></i>
-
   <a class="go" href="/projects/" aria-label="See all projects"><span aria-hidden="true">↗</span></a>
 </section>
 
 <style>
   .dock { position: relative; padding: 24px 24px 22px; }
-  .dock.pointer-fine { cursor: none; }
-  .dock.pointer-fine a, .dock.pointer-fine button { cursor: none; }
-
-  /* iPadOS-style pointer: a soft blob that morphs onto whatever it is over */
-  .ptr {
-    position: absolute; left: 0; top: 0; width: 24px; height: 24px;
-    border-radius: 12px; background: color-mix(in srgb, var(--ink) 13%, transparent);
-    opacity: 0; pointer-events: none; z-index: 0;
-    transform: translate3d(var(--px, 0), var(--py, 0), 0);
-    transition:
-      transform 0.17s cubic-bezier(0.22, 1, 0.36, 1),
-      width 0.22s cubic-bezier(0.3, 1.5, 0.5, 1),
-      height 0.22s cubic-bezier(0.3, 1.5, 0.5, 1),
-      border-radius 0.22s, opacity 0.18s;
-  }
-  .dock.ptr-on .ptr { opacity: 1; }
-  .tile { position: relative; z-index: 1; }
   .top { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
   .nudge { font-size: 11px; color: var(--muted); transition: opacity 0.24s; }
   .dock.open .nudge { opacity: 0; }
@@ -128,11 +109,10 @@ const peek = projects.map((p) => ({
   .tile {
     width: 56px; height: 56px; padding: 9px; border-radius: 16px;
     color: var(--icon); opacity: 0.75;
-    transform: var(--lean, none);
     transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.2s, background 0.2s;
   }
   .tile:hover, .tile:focus-visible, .tile.on {
-    transform: var(--lean, none) translateY(-4px);
+    transform: translateY(-4px);
     opacity: 1;
     background: color-mix(in srgb, var(--icon) 9%, transparent);
   }
@@ -144,10 +124,9 @@ const peek = projects.map((p) => ({
     box-shadow: inset 0 0 0 1px var(--line);
     transition: transform 0.25s, color 0.2s, box-shadow 0.2s;
   }
-  .go:hover { color: var(--ink); transform: var(--lean, none) rotate(45deg); box-shadow: inset 0 0 0 1px var(--muted); }
+  .go:hover { color: var(--ink); transform: rotate(45deg); box-shadow: inset 0 0 0 1px var(--muted); }
 
   @media (prefers-reduced-motion: reduce) {
-    .ptr { transition: opacity 0.18s; }
     .peek-wrap, .peek, .caret, .dock.open .peek-wrap, .dock.open .peek, .dock.open .caret { transition: none; }
     .peek { transform: none; }
   }
@@ -219,59 +198,6 @@ const peek = projects.map((p) => ({
     }
     dock.addEventListener('pointerleave', hide);
 
-    // iPadOS-style pointer: a blob that trails the mouse and snaps onto controls.
-    const ptr = document.getElementById('ptr');
-    const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const fine = matchMedia('(hover: hover) and (pointer: fine)').matches;
-    if (ptr && fine) {
-      dock.classList.add('pointer-fine');
-      const targets = [...tiles, dock.querySelector('.go')].filter(Boolean);
-
-      const park = (el, e) => {
-        const d = dock.getBoundingClientRect();
-        if (el) {
-          const r = el.getBoundingClientRect();
-          ptr.style.width = `${r.width}px`;
-          ptr.style.height = `${r.height}px`;
-          ptr.style.borderRadius = getComputedStyle(el).borderRadius;
-          ptr.style.setProperty('--px', `${r.left - d.left}px`);
-          ptr.style.setProperty('--py', `${r.top - d.top}px`);
-          return;
-        }
-        ptr.style.width = '24px';
-        ptr.style.height = '24px';
-        ptr.style.borderRadius = '12px';
-        ptr.style.setProperty('--px', `${e.clientX - d.left - 12}px`);
-        ptr.style.setProperty('--py', `${e.clientY - d.top - 12}px`);
-      };
-
-      // a little parallax so the icon leans toward the pointer
-      const lean = (el, e) => {
-        if (calm || !el) return;
-        const r = el.getBoundingClientRect();
-        const dx = ((e.clientX - (r.left + r.width / 2)) / r.width) * 5;
-        const dy = ((e.clientY - (r.top + r.height / 2)) / r.height) * 5;
-        el.style.setProperty('--lean', `translate(${dx.toFixed(1)}px, ${dy.toFixed(1)}px)`);
-      };
-
-      let over = null;
-      dock.addEventListener('pointermove', (e) => {
-        if (e.pointerType !== 'mouse') return;
-        dock.classList.add('ptr-on');
-        const hit = targets.find((t) => t.contains(e.target));
-        if (hit !== over) {
-          over?.style.removeProperty('--lean');
-          over = hit ?? null;
-        }
-        park(hit, e);
-        lean(hit, e);
-      });
-      dock.addEventListener('pointerleave', () => {
-        dock.classList.remove('ptr-on');
-        over?.style.removeProperty('--lean');
-        over = null;
-      });
-    }
     dock.addEventListener('focusout', (e) => {
       if (!dock.contains(e.relatedTarget)) hide();
     });

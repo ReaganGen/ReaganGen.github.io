@@ -1,0 +1,68 @@
+---
+// iPadOS-style pointer for the whole site: a soft translucent dot in place of
+// the arrow. Position is written straight to a transform with no easing, so it
+// tracks the mouse exactly and cannot drift or jitter.
+---
+<div id="cursor" aria-hidden="true"></div>
+
+<style>
+  #cursor {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 22px;
+    height: 22px;
+    margin: -11px 0 0 -11px;
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--ink) 28%, transparent);
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0;
+    will-change: transform;
+  }
+  :global(html.has-cursor) #cursor { opacity: 1; }
+  /* over something clickable it sits a little larger and firmer */
+  :global(html.cursor-hot) #cursor {
+    width: 34px;
+    height: 34px;
+    margin: -17px 0 0 -17px;
+    background: color-mix(in srgb, var(--ink) 16%, transparent);
+  }
+  :global(html.cursor-none) #cursor { opacity: 0; }
+
+  @media (hover: hover) and (pointer: fine) {
+    :global(html.has-cursor),
+    :global(html.has-cursor *) { cursor: none; }
+    /* text still gets a real caret */
+    :global(html.has-cursor input),
+    :global(html.has-cursor textarea) { cursor: text; }
+  }
+</style>
+
+<script>
+  const dot = document.getElementById('cursor');
+  const fine = matchMedia('(hover: hover) and (pointer: fine)');
+
+  if (dot && fine.matches) {
+    const root = document.documentElement;
+    const hot = 'a, button, [role="button"], summary, label, .tile, .dot';
+    const text = 'input, textarea';
+
+    addEventListener(
+      'pointermove',
+      (e) => {
+        if (e.pointerType !== 'mouse') return;
+        dot.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0)`;
+        root.classList.add('has-cursor');
+        const el = e.target as Element;
+        root.classList.toggle('cursor-hot', !!el.closest?.(hot));
+        root.classList.toggle('cursor-none', !!el.closest?.(text));
+      },
+      { passive: true }
+    );
+
+    addEventListener('pointerdown', () => root.classList.add('cursor-hot'));
+    document.addEventListener('mouseleave', () => root.classList.remove('has-cursor'));
+    addEventListener('blur', () => root.classList.remove('has-cursor'));
+  }
+</script>
