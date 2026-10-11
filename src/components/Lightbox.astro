@@ -27,7 +27,7 @@
   .shell { width: min(92vw, 940px); height: min(86vh, 700px); display: flex; flex-direction: column; color: var(--ink-2); }
   header { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; }
   h2 { font-size: 20px; font-weight: 500; margin: 2px 0 0; }
-  .acts { display: flex; gap: 8px; }
+  .acts { display: flex; gap: 8px; position: relative; z-index: 2; }
   .acts button {
     border: 0; cursor: pointer; font: inherit; font-size: 13px; color: var(--ink-2);
     background: var(--glass); border-radius: 999px; padding: 6px 14px;
@@ -35,7 +35,7 @@
   }
   .acts button:hover { color: var(--ink); }
   #lb-close { width: 32px; padding: 0; height: 32px; }
-  .stage { flex: 1; min-height: 0; margin: 10px -12px 0; }
+  .stage { position: relative; flex: 1; min-height: 0; margin: 10px -12px 0; }
   .stage :global(canvas) { width: 100% !important; height: 100% !important; }
   .hint { font-size: 11px; color: var(--muted); margin: 6px 0 0; text-align: right; }
   @media (max-width: 640px) {

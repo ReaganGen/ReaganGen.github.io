@@ -115,6 +115,7 @@ const peek = projects.map((p) => ({
     const tiles = [...dock.querySelectorAll('.tile')];
     const byId = Object.fromEntries(peek.map((p) => [p.id, p]));
     let current = null;
+    let pending = 0;
 
     const place = (tile) => {
       const r = tile.getBoundingClientRect();
@@ -139,9 +140,10 @@ const peek = projects.map((p) => ({
       tiles.forEach((t) => t.classList.toggle('on', t === tile));
       place(tile);
       const p = byId[tile.dataset.id];
+      clearTimeout(pending);
       if (instant) return fill(p);
       box.classList.add('swap');
-      setTimeout(() => { fill(p); box.classList.remove('swap'); }, 150);
+      pending = setTimeout(() => { fill(p); box.classList.remove('swap'); }, 130);
     };
 
     for (const tile of tiles) {

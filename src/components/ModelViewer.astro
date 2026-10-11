@@ -16,7 +16,7 @@ const { src, title = 'Model', tag, height = '100%' } = Astro.props;
   .model:active { cursor: grabbing; }
   .model :global(canvas) { position: absolute; inset: 0; width: 100% !important; height: 100% !important; }
   .hint, .loading { position: absolute; font-size: 11px; color: var(--muted); z-index: 1; pointer-events: none; }
-  .hint { right: 2px; bottom: 0; opacity: 0; transition: opacity 0.25s; }
+  .hint { right: 30px; bottom: 26px; opacity: 0; transition: opacity 0.25s; }
   .model:hover .hint, .model:focus-visible .hint { opacity: 1; }
   .loading { left: 50%; top: 50%; transform: translate(-50%, -50%); }
 </style>

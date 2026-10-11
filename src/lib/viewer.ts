@@ -234,6 +234,8 @@ export async function mountSDF(
   paint();
   viewer.zoomTo();
   viewer.zoom(opts.zoom ?? 1.05);
+  viewer.resize();
+  viewer.render();
   if (!calm()) viewer.spin('y', 0.4);
   const onTheme = () => requestAnimationFrame(paint);
   window.addEventListener('themechange', onTheme);

@@ -1,0 +1,95 @@
+---
+// Photo album: a swipeable strip with a dot per photo.
+// Drop images into public/images/album/ and they show up here, sorted by filename.
+interface Props { photos: { src: string; caption?: string }[]; title?: string }
+const { photos, title = 'Album' } = Astro.props;
+---
+{photos.length > 0 && (
+  <section class="card album reveal" aria-roledescription="carousel" aria-label={title}>
+    <div class="top">
+      <span class="eyebrow">{title}</span>
+      <span class="count"><b id="al-i">1</b> / {photos.length}</span>
+    </div>
+
+    <div class="strip" id="al-strip" tabindex="0">
+      {photos.map((p, i) => (
+        <figure class="slide" data-i={i}>
+          <img src={p.src} alt={p.caption ?? ''} loading={i === 0 ? 'eager' : 'lazy'} draggable="false" />
+          {p.caption && <figcaption>{p.caption}</figcaption>}
+        </figure>
+      ))}
+    </div>
+
+    <div class="dots" role="tablist" aria-label="Choose a photo">
+      {photos.map((_, i) => (
+        <button class:list={['dot', { on: i === 0 }]} data-go={i} role="tab" aria-label={`Photo ${i + 1}`} aria-selected={i === 0} />
+      ))}
+    </div>
+  </section>
+)}
+
+<style>
+  .album { padding: 22px 22px 18px; }
+  .top { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 12px; }
+  .count { font-size: 11px; color: var(--muted); }
+  .count b { color: var(--ink); font-weight: 500; }
+
+  .strip {
+    display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory;
+    scrollbar-width: none; border-radius: 16px; outline: none;
+  }
+  .strip::-webkit-scrollbar { display: none; }
+  .strip:focus-visible { box-shadow: 0 0 0 2px var(--icon); }
+
+  .slide { flex: 0 0 100%; scroll-snap-align: center; margin: 0; position: relative; }
+  .slide img {
+    width: 100%; aspect-ratio: 16 / 10; object-fit: cover;
+    border-radius: 16px; background: var(--card-2); user-select: none;
+  }
+  figcaption {
+    position: absolute; left: 14px; right: 14px; bottom: 12px;
+    font-size: 12px; color: #fff; text-shadow: 0 1px 6px rgba(0, 0, 0, 0.55);
+  }
+
+  .dots { display: flex; justify-content: center; gap: 7px; margin-top: 14px; }
+  .dot {
+    width: 7px; height: 7px; padding: 0; border: 0; border-radius: 50%; cursor: pointer;
+    background: var(--line); transition: background 0.25s, transform 0.25s, width 0.25s;
+  }
+  .dot:hover { background: var(--muted); }
+  .dot.on { background: var(--accent); width: 18px; border-radius: 4px; }
+  @media (max-width: 560px) { .album { padding: 18px 16px 14px; } }
+</style>
+
+<script>
+  const strip = document.getElementById('al-strip');
+  if (strip) {
+    const slides = [...strip.querySelectorAll<HTMLElement>('.slide')];
+    const dots = [...document.querySelectorAll<HTMLButtonElement>('.dot')];
+    const counter = document.getElementById('al-i')!;
+
+    const mark = (i: number) => {
+      counter.textContent = String(i + 1);
+      dots.forEach((d, k) => {
+        d.classList.toggle('on', k === i);
+        d.setAttribute('aria-selected', String(k === i));
+      });
+    };
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) if (e.intersectionRatio > 0.6) mark(Number((e.target as HTMLElement).dataset.i));
+      },
+      { root: strip, threshold: [0.61] }
+    );
+    slides.forEach((s) => io.observe(s));
+
+    const go = (i: number) => strip.scrollTo({ left: slides[i].offsetLeft - slides[0].offsetLeft, behavior: 'smooth' });
+    dots.forEach((d, i) => d.addEventListener('click', () => go(i)));
+    strip.addEventListener('keydown', (e) => {
+      const at = dots.findIndex((d) => d.classList.contains('on'));
+      if (e.key === 'ArrowRight' && at < slides.length - 1) { e.preventDefault(); go(at + 1); }
+      if (e.key === 'ArrowLeft' && at > 0) { e.preventDefault(); go(at - 1); }
+    });
+  }
+</script>

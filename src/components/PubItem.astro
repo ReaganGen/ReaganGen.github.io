@@ -11,7 +11,6 @@ const authors = d.authors.replace(/(Li, G\.[*†]?)/, '<strong>$1</strong>');
   <div class="title serif">{d.title}</div>
   {!compact && <div class="authors" set:html={authors} />}
   <div class="links">
-    {d.role && <span class="tag">{d.role}</span>}
     {d.links.map((l) => <a href={l.href} target="_blank" rel="noopener">{l.label} ↗</a>)}
   </div>
 </li>

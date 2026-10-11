@@ -12,7 +12,7 @@ const { src, title = 'Molecule', tag, height = '100%' } = Astro.props;
     position: relative; display: block; width: 100%; min-height: 200px;
     background: none; border: 0; padding: 0; color: inherit; cursor: zoom-in; touch-action: pan-y;
   }
-  .hint { position: absolute; right: 2px; bottom: 0; font-size: 11px; color: var(--muted); opacity: 0; transition: opacity 0.25s; pointer-events: none; }
+  .hint { position: absolute; right: 24px; bottom: 8px; font-size: 11px; color: var(--muted); opacity: 0; transition: opacity 0.25s; pointer-events: none; }
   .mol:hover .hint, .mol:focus-visible .hint { opacity: 1; }
 </style>
 
