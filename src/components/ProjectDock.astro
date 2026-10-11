@@ -18,15 +18,19 @@ const peek = projects.map((p) => ({
     <span class="nudge">Hover an icon for details</span>
   </div>
 
-  <div class="peek" id="peek">
-    <div class="shot" id="peek-shot"></div>
-    <div class="txt">
-      <span class="meta" id="peek-meta"></span>
-      <b id="peek-title"></b>
-      <span class="sub" id="peek-tag"></span>
+  <div class="peek-wrap" aria-live="polite">
+    <div class="peek-inner">
+      <div class="peek" id="peek">
+        <div class="shot" id="peek-shot"></div>
+        <div class="txt">
+          <span class="meta" id="peek-meta"></span>
+          <b id="peek-title"></b>
+          <span class="sub" id="peek-tag"></span>
+        </div>
+      </div>
+      <i class="caret" id="caret" aria-hidden="true"></i>
     </div>
   </div>
-  <i class="caret" id="caret" aria-hidden="true"></i>
 
   <div class="tray" role="list">
     {projects.map((p) => (
@@ -42,15 +46,37 @@ const peek = projects.map((p) => ({
 <style>
   .dock { position: relative; padding: 24px 24px 22px; }
   .top { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
-  .nudge { font-size: 11px; color: var(--muted); transition: opacity 0.2s; }
+  .nudge { font-size: 11px; color: var(--muted); transition: opacity 0.24s; }
+  .dock.open .nudge { opacity: 0; }
+
+  /* Collapsed by default; springs open while an icon is hovered. */
+  .peek-wrap {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.26s cubic-bezier(0.4, 0, 0.75, 0.5);
+  }
+  .peek-inner { overflow: hidden; min-height: 0; position: relative; }
+  .dock.open .peek-wrap {
+    grid-template-rows: 1fr;
+    transition: grid-template-rows 0.46s cubic-bezier(0.34, 1.42, 0.5, 1);
+  }
 
   .peek {
     display: flex; gap: 14px; align-items: center;
-    margin: 14px 0 0; padding: 12px;
+    margin: 14px 0 12px; padding: 12px;
     background: var(--paper); border-radius: 16px;
     box-shadow: inset 0 0 0 1px var(--line);
+    transform-origin: top center;
+    transform: scaleY(0.82) scaleX(1.02) translateY(-6px);
+    opacity: 0;
+    transition: transform 0.24s cubic-bezier(0.4, 0, 0.75, 0.5), opacity 0.16s;
   }
-  .peek > * { transition: opacity 0.18s; }
+  .dock.open .peek {
+    transform: none;
+    opacity: 1;
+    transition: transform 0.52s cubic-bezier(0.3, 1.6, 0.5, 1), opacity 0.22s;
+  }
+  .peek > * { transition: opacity 0.16s; }
   .peek.swap > * { opacity: 0; }
   .shot {
     width: 110px; height: 66px; flex: none; border-radius: 10px;
@@ -63,14 +89,20 @@ const peek = projects.map((p) => ({
   .sub { font-size: 13px; color: var(--ink-2); }
 
   .caret {
-    position: absolute; width: 11px; height: 11px; rotate: 45deg;
+    position: absolute; bottom: 7px; width: 11px; height: 11px;
     background: var(--paper); border-right: 1px solid var(--line); border-bottom: 1px solid var(--line);
-    border-radius: 0 0 2px 0; transform: translateX(-50%);
-    transition: left 0.28s cubic-bezier(0.2, 0.9, 0.25, 1);
+    border-radius: 0 0 2px 0; transform: translateX(-50%) rotate(45deg) scale(0.4);
+    opacity: 0;
+    transition: left 0.3s cubic-bezier(0.2, 0.9, 0.25, 1), transform 0.2s, opacity 0.16s;
+  }
+  .dock.open .caret {
+    transform: translateX(-50%) rotate(45deg) scale(1);
+    opacity: 1;
+    transition: left 0.3s cubic-bezier(0.2, 0.9, 0.25, 1), transform 0.42s cubic-bezier(0.3, 1.7, 0.5, 1), opacity 0.2s;
   }
 
   .tray {
-    display: flex; gap: 6px; flex-wrap: wrap; margin-top: 18px;
+    display: flex; gap: 6px; flex-wrap: wrap;
     padding: 8px; border-radius: 20px; background: var(--paper);
     box-shadow: inset 0 0 0 1px var(--line);
   }
@@ -94,6 +126,10 @@ const peek = projects.map((p) => ({
   }
   .go:hover { color: var(--ink); transform: rotate(45deg); box-shadow: inset 0 0 0 1px var(--muted); }
 
+  @media (prefers-reduced-motion: reduce) {
+    .peek-wrap, .peek, .caret, .dock.open .peek-wrap, .dock.open .peek, .dock.open .caret { transition: none; }
+    .peek { transform: none; }
+  }
   @media (max-width: 560px) {
     .dock { padding: 20px; }
     .shot { width: 78px; height: 56px; }
@@ -121,7 +157,6 @@ const peek = projects.map((p) => ({
       const r = tile.getBoundingClientRect();
       const d = dock.getBoundingClientRect();
       caret.style.left = `${r.left - d.left + r.width / 2}px`;
-      caret.style.top = `${box.offsetTop + box.offsetHeight - 5}px`;
     };
 
     const fill = (p) => {
@@ -134,23 +169,37 @@ const peek = projects.map((p) => ({
       shot.style.backgroundSize = p.image ? 'cover' : '9px 9px';
     };
 
-    const show = (tile, instant) => {
+    const show = (tile) => {
+      place(tile);
+      const wasOpen = dock.classList.contains('open');
+      dock.classList.add('open');
+      tiles.forEach((t) => t.classList.toggle('on', t === tile));
       if (current === tile) return;
       current = tile;
-      tiles.forEach((t) => t.classList.toggle('on', t === tile));
-      place(tile);
       const p = byId[tile.dataset.id];
       clearTimeout(pending);
-      if (instant) return fill(p);
+      // Opening from closed: fill straight away so the panel springs out full.
+      if (!wasOpen) return fill(p);
       box.classList.add('swap');
       pending = setTimeout(() => { fill(p); box.classList.remove('swap'); }, 130);
+    };
+
+    const hide = () => {
+      clearTimeout(pending);
+      box.classList.remove('swap');
+      dock.classList.remove('open');
+      tiles.forEach((t) => t.classList.remove('on'));
+      current = null;
     };
 
     for (const tile of tiles) {
       tile.addEventListener('pointerenter', () => show(tile));
       tile.addEventListener('focus', () => show(tile));
     }
-    show(tiles[0], true);
+    dock.addEventListener('pointerleave', hide);
+    dock.addEventListener('focusout', (e) => {
+      if (!dock.contains(e.relatedTarget)) hide();
+    });
     addEventListener('resize', () => current && place(current));
   }
 </script>
