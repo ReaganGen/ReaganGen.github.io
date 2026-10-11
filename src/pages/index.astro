@@ -1,0 +1,146 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import ModelViewer from '../components/ModelViewer.astro';
+import MoleculeViewer from '../components/MoleculeViewer.astro';
+import ProjectDock from '../components/ProjectDock.astro';
+import PubItem from '../components/PubItem.astro';
+import { profile, socials } from '../data/profile';
+import { molecules } from '../data/molecules';
+
+const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
+const lumi = projects.find((p) => p.id === 'lumi-lab')!;
+const pubs = (await getCollection('publications')).sort((a, b) => b.data.year - a.data.year);
+const news = (await getCollection('news')).slice(0, 5);
+const posts = (await getCollection('blog', (p) => !p.data.draft)).sort((a, b) => +b.data.date - +a.data.date);
+const latest = posts[0];
+---
+<Base>
+  <section class="wrap hero">
+    <div class="card intro reveal">
+      <h1><span class="me">{profile.name}</span> is building <a href="/projects/#lumi-lab">self-driving labs</a>.</h1>
+      <div class="rule"></div>
+      <p>I'm a Ph.D. student in Biomedical Engineering at the University of Toronto.</p>
+      <p>I build generative models that design molecules.</p>
+      <p>I build the robots and agents that make and test them.</p>
+      <p>I think the loop between model and bench should close <em class="accent">on its own</em><sup>*</sup>.</p>
+      <p class="foot mono"><sup>*</sup> Design, make, test, analyze. Repeat.</p>
+      <div class="cta">
+        {socials.map((s) => <a class="pill" href={s.href} target={s.href.startsWith('http') ? '_blank' : undefined} rel="noopener">{s.label} <span class="arr">↗</span></a>)}
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap dock-wrap">
+    <ProjectDock projects={projects} />
+  </section>
+
+  <section class="wrap bento">
+    <div class="card b-lumi reveal">
+      <div class="b-head">
+        <div>
+          <div class="eyebrow">Featured · {lumi.data.venue}</div>
+          <h3 class="serif"><a href="/projects/#lumi-lab">{lumi.data.title} <span class="arrow">↗</span></a></h3>
+          <p class="muted small">Autonomous lipid discovery platform. I designed its custom hardware.</p>
+        </div>
+      </div>
+      <div class="b-model"><ModelViewer src="/models/lumi-lab.glb" title="LUMI-lab platform" tag="Hardware · Cell 2026" /></div>
+    </div>
+
+    {molecules.map((m) => (
+      <div class="card b-mol reveal">
+        <div class="mol-head">
+          <div class="eyebrow">{m.tag ?? 'Lipid'}</div>
+          <h3 class="serif">{m.name}</h3>
+          <p class="muted small">{m.note}</p>
+        </div>
+        <div class="b-mol-view"><MoleculeViewer src={m.src} title={m.name} tag={m.tag} /></div>
+        <div class="legend"><span><i style="background:var(--ink)" />C</span><span><i style="background:var(--accent)" />O</span><span><i style="background:var(--sage)" />N</span></div>
+      </div>
+    ))}
+
+    <a class="card b-post reveal" href={latest ? `/blog/${latest.id}/` : '/blog/'}>
+      <div class="eyebrow">Latest writing</div>
+      <h3 class="serif">{latest?.data.title ?? 'Notes coming soon'}</h3>
+      <span class="arrow">Read →</span>
+    </a>
+
+    <div class="card b-focus reveal">
+      <div class="eyebrow">Research interests</div>
+      <div class="tags">{profile.interests.map((t) => <span class="pill">{t}</span>)}</div>
+    </div>
+  </section>
+
+  <section class="section wrap two">
+    <div>
+      <div class="section-head reveal"><h2>News</h2></div>
+      <ol class="news">
+        {news.map((n) => (
+          <li class="reveal">
+            <span class="mono date">{n.data.date}</span>
+            {n.data.href ? <a href={n.data.href} target="_blank" rel="noopener">{n.data.text}</a> : <span>{n.data.text}</span>}
+          </li>
+        ))}
+      </ol>
+    </div>
+    <div>
+      <div class="section-head reveal"><h2>Selected papers</h2><a href="/publications/">All →</a></div>
+      <ul class="pubs">{pubs.slice(0, 4).map((p) => <PubItem pub={p} compact />)}</ul>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .hero { padding-top: 40px; padding-bottom: 12px; }
+  .dock-wrap { margin-top: 12px; }
+  .intro { padding: 34px 36px 30px; }
+  h1 { font-size: clamp(21px, 2.6vw, 26px); font-weight: 500; letter-spacing: -0.025em; line-height: 1.2; margin: 0; color: var(--muted); }
+  h1 .me { color: var(--ink); }
+  h1 a { color: var(--ink); text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 4px; }
+  .rule { height: 1px; background: var(--line); margin: 18px 0 16px; }
+  .intro p { font-size: 16px; color: var(--ink-2); margin: 0 0 12px; max-width: 36em; }
+  .intro sup { color: var(--accent); }
+  .accent { font-style: normal; color: var(--ink); }
+  .intro .foot { font-size: 12px; color: var(--muted); margin-top: 18px; }
+  .cta { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 22px; }
+  .cta .pill { font-size: 13px; }
+  .arr { color: var(--muted); }
+
+  .bento { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); grid-auto-rows: minmax(132px, auto); grid-auto-flow: dense; gap: 12px; }
+  .bento h3 { font-size: 21px; margin: 6px 0 6px; line-height: 1.1; }
+  .small { font-size: 13px; margin: 0; }
+  .b-lumi { grid-column: span 6; grid-row: span 4; display: flex; flex-direction: column; }
+  .b-head { display: flex; justify-content: space-between; gap: 12px; }
+  .b-model { flex: 1; min-height: 360px; margin: 2px -24px -20px; }
+  .arrow { font-size: 12px; color: var(--accent); }
+  .b-head h3 a:hover { color: var(--accent); }
+  .b-mol { grid-column: span 2; grid-row: span 2; display: flex; flex-direction: column; gap: 4px; }
+  .mol-head { min-height: 66px; }
+  .b-mol-view { flex: 1; min-height: 130px; margin: 0 -20px; }
+  .legend { display: flex; gap: 14px; font-size: 11px; color: var(--muted); }
+  .legend i { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 5px; }
+  .b-post { grid-column: span 3; grid-row: span 1; display: flex; flex-direction: column; }
+  .b-post h3 { font-size: 17px; }
+  .b-post .arrow { margin-top: auto; }
+  .b-focus { grid-column: span 3; display: flex; flex-direction: column; justify-content: space-between; }
+  .tags { display: flex; flex-wrap: wrap; gap: 8px; }
+  .tags .pill { background: var(--paper); font-size: 13px; padding: 6px 12px; }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; }
+  .two { display: grid; grid-template-columns: 1fr 1.2fr; gap: 44px; }
+  .news, .pubs { list-style: none; margin: 0; padding: 0; }
+  .news li { display: grid; grid-template-columns: 48px 1fr; gap: 12px; padding: 12px 0; border-top: 1px solid var(--line); font-size: 14px; }
+  .news a:hover { color: var(--accent); }
+  .date { color: var(--muted); font-size: 12px; padding-top: 3px; }
+  .mono { font-family: var(--sans); }
+
+  @media (max-width: 900px) {
+    .bento { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-rows: auto; }
+    .b-lumi, .b-mol, .b-post, .b-focus { grid-column: span 2; grid-row: auto; }
+    .b-focus { gap: 14px; }
+    .b-model { height: 320px; flex: none; }
+    .b-mol-view { height: 260px; flex: none; }
+        .two { grid-template-columns: 1fr; gap: 0; }
+  }
+  @media (max-width: 640px) { .hero { padding-top: 28px; } .intro { padding: 28px 24px; } }
+</style>

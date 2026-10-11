@@ -1,0 +1,35 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import PubItem from '../components/PubItem.astro';
+import { socials } from '../data/profile';
+
+const pubs = (await getCollection('publications')).sort((a, b) => b.data.year - a.data.year);
+const years = [...new Set(pubs.map((p) => p.data.year))];
+const scholar = socials.find((s) => s.label === 'Scholar');
+---
+<Base title="Publications" description="Peer-reviewed publications.">
+  <section class="wrap head">
+    <div class="eyebrow reveal">Publications</div>
+    <h1 class="serif reveal">Papers</h1>
+    <p class="muted reveal">* equal contribution · † co-second author{scholar && <> · <a href={scholar.href} target="_blank" rel="noopener">Google Scholar ↗</a></>}</p>
+  </section>
+  <section class="wrap">
+    {years.map((y) => (
+      <div class="year">
+        <div class="y reveal">{y}</div>
+        <ul>{pubs.filter((p) => p.data.year === y).map((p) => <PubItem pub={p} />)}</ul>
+      </div>
+    ))}
+  </section>
+</Base>
+
+<style>
+  .head { padding-top: 56px; padding-bottom: 16px; }
+  h1 { font-size: clamp(26px, 3.4vw, 34px); font-weight: 500; margin: 10px 0 8px; letter-spacing: -0.03em; }
+  .head a { color: var(--accent); }
+  .year { display: grid; grid-template-columns: 84px minmax(0, 1fr); gap: 20px; margin-top: 20px; }
+  .y { font-size: 24px; color: var(--muted); padding-top: 14px; }
+  ul { list-style: none; margin: 0; padding: 0; }
+  @media (max-width: 640px) { .year { grid-template-columns: 1fr; gap: 0; } }
+</style>

@@ -1,0 +1,60 @@
+---
+// Line-art mark per project. Every glyph is drawn inside the same optical box
+// (x 10–38, y 12–38) so the icons read at one size in the dock.
+interface Props { id: string }
+const { id } = Astro.props;
+---
+<svg viewBox="0 0 48 48" class="pi" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  {id === 'lumi-lab' && (
+    <>
+      <path d="M11 12.5h26M24 12.5V16" />
+      <rect x="21" y="16" width="6" height="4" rx="1.2" />
+      <rect x="10" y="25" width="28" height="13" rx="3.5" />
+      <circle cx="17" cy="31.5" r="2.2" /><circle cx="24" cy="31.5" r="2.2" /><circle cx="31" cy="31.5" r="2.2" />
+    </>
+  )}
+  {id === 'agentsdl' && (
+    <>
+      <rect x="10" y="12" width="18" height="13" rx="4" />
+      <path d="M15.5 25v4.5l5-4.5" />
+      <rect x="22" y="23" width="16" height="13" rx="4" />
+      <path d="M32.5 36v4.5l-5-4.5" />
+      <path d="M30 27.2v5.6M27.2 30h5.6" />
+    </>
+  )}
+  {id === 'rnaopt' && (
+    <>
+      <circle cx="24" cy="13" r="2.4" />
+      <path d="M24 15.4V18M24 18l-8.5 7M24 18l8.5 7" />
+      <path d="M15.5 25 11.5 33M15.5 25l4 8" />
+      <circle cx="33.5" cy="31" r="4.2" />
+      <path d="M36.6 34 38.5 36" />
+    </>
+  )}
+  {id === 'molea' && (
+    <>
+      <circle cx="19" cy="24.5" r="9.6" /><circle cx="29" cy="24.5" r="9.6" />
+      <path d="M21 25 23.2 27.3l4.2-5.8" />
+    </>
+  )}
+  {id === 'genlnp' && (
+    <>
+      <circle cx="24" cy="25" r="13" />
+      <circle cx="24" cy="25" r="7.5" stroke-dasharray="1 4.4" />
+      <circle cx="24" cy="21.6" r="1.9" /><circle cx="20.8" cy="27" r="1.9" /><circle cx="27.2" cy="27" r="1.9" />
+    </>
+  )}
+  {id === '3utrbert' && (
+    <>
+      <rect x="11" y="28" width="8" height="10" rx="2.4" />
+      <rect x="20" y="28" width="8" height="10" rx="2.4" />
+      <rect x="29" y="28" width="8" height="10" rx="2.4" />
+      <path d="M15 24a9 9 0 0 1 18 0" stroke-dasharray="1 4.4" />
+      <circle cx="24" cy="14.6" r="2.6" />
+    </>
+  )}
+</svg>
+
+<style>
+  .pi { width: 100%; height: 100%; display: block; }
+</style>

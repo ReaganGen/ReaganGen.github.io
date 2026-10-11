@@ -1,0 +1,51 @@
+---
+// Interactive GLB viewer. Loads when scrolled into view; click to inspect it full size.
+interface Props { src: string; title?: string; tag?: string; height?: string }
+const { src, title = 'Model', tag, height = '100%' } = Astro.props;
+---
+<button class="model" type="button" data-src={src} data-title={title} data-tag={tag} style={`height:${height}`}>
+  <span class="hint">Click to expand</span>
+  <span class="loading">Loading model…</span>
+</button>
+
+<style>
+  .model {
+    position: relative; display: block; width: 100%; min-height: 240px;
+    background: none; border: 0; padding: 0; color: inherit; cursor: grab; touch-action: pan-y;
+  }
+  .model:active { cursor: grabbing; }
+  .model :global(canvas) { position: absolute; inset: 0; width: 100% !important; height: 100% !important; }
+  .hint, .loading { position: absolute; font-size: 11px; color: var(--muted); z-index: 1; pointer-events: none; }
+  .hint { right: 2px; bottom: 0; opacity: 0; transition: opacity 0.25s; }
+  .model:hover .hint, .model:focus-visible .hint { opacity: 1; }
+  .loading { left: 50%; top: 50%; transform: translate(-50%, -50%); }
+</style>
+
+<script>
+  const io = new IntersectionObserver(
+    (entries) => {
+      for (const e of entries) {
+        if (!e.isIntersecting) continue;
+        io.unobserve(e.target);
+        const el = e.target as HTMLElement;
+        import('../lib/viewer').then(({ mountGLB }) =>
+          mountGLB(el, el.dataset.src!).then(() => el.querySelector('.loading')?.remove())
+        );
+      }
+    },
+    { rootMargin: '200px' }
+  );
+
+  for (const el of document.querySelectorAll<HTMLElement>('.model[data-src]')) {
+    io.observe(el);
+    let dragged = false;
+    el.addEventListener('pointerdown', () => (dragged = false));
+    el.addEventListener('pointermove', (e) => { if (e.buttons) dragged = true; });
+    el.addEventListener('click', () => {
+      if (dragged) return;
+      window.dispatchEvent(new CustomEvent('openviewer', {
+        detail: { kind: 'glb', src: el.dataset.src, title: el.dataset.title, tag: el.dataset.tag },
+      }));
+    });
+  }
+</script>

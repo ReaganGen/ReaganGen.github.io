@@ -1,0 +1,23 @@
+{
+  "name": "personal-site",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "model": "node scripts/drop-oversized.mjs raw/sdl.raw.glb raw/tmp.glb 20 && node scripts/flat-materials.mjs raw/tmp.glb public/models/lumi-lab.glb && rm raw/tmp.glb"
+  },
+  "dependencies": {
+    "3dmol": "^2.5.5",
+    "astro": "^5.18.2",
+    "katex": "^0.19.0",
+    "rehype-katex": "^7.0.1",
+    "remark-math": "^6.0.0",
+    "three": "^0.186.1"
+  },
+  "devDependencies": {
+    "@gltf-transform/cli": "^4.5.1"
+  }
+}

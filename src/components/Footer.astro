@@ -1,0 +1,30 @@
+---
+import { profile, socials } from '../data/profile';
+const onContact = Astro.url.pathname.startsWith('/contact');
+---
+<footer class="wrap">
+  {!onContact && (
+    <a class="card cta" href="/contact/">
+      <div>
+        <div class="eyebrow">Say hello</div>
+        <p class="big">Want to work together, or just talk science? Send me a message.</p>
+      </div>
+      <span class="pill solid">Text me <span aria-hidden="true">↗</span></span>
+    </a>
+  )}
+  <div class="fine">
+    <span>© {new Date().getFullYear()} {profile.name} · {profile.location}</span>
+    <span class="links">
+      {socials.map((s) => <a href={s.href} target={s.href.startsWith('http') ? '_blank' : undefined} rel="noopener">{s.label}</a>)}
+    </span>
+  </div>
+</footer>
+
+<style>
+  footer { padding-top: 64px; padding-bottom: 32px; }
+  .cta { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; flex-wrap: wrap; }
+  .big { font-size: clamp(18px, 2.2vw, 21px); font-weight: 500; letter-spacing: -0.02em; line-height: 1.25; margin: 10px 0 0; max-width: 20em; }
+  .fine { display: flex; justify-content: space-between; margin-top: 20px; font-size: 12px; color: var(--muted); font-family: var(--sans); flex-wrap: wrap; gap: 10px; }
+  .links { display: flex; gap: 16px; }
+  .links a:hover { color: var(--ink); }
+</style>

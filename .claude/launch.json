@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "site",
+      "runtimeExecutable": "/Users/reagan/miniconda3/bin/conda",
+      "runtimeArgs": ["run", "--no-capture-output", "-n", "personal-site", "npx", "astro", "dev", "--port", "4321"],
+      "port": 4321
+    }
+  ]
+}

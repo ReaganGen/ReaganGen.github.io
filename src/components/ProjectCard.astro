@@ -1,0 +1,30 @@
+---
+import type { CollectionEntry } from 'astro:content';
+interface Props { project: CollectionEntry<'projects'> }
+const { project } = Astro.props;
+const d = project.data;
+---
+<a class="card pc reveal" href={`/projects/#${project.id}`}>
+  <div class:list={['thumb', { blank: !d.image }]}>
+    {d.image ? <img src={d.image} alt="" loading="lazy" /> : <span class="glyph serif">{d.title}</span>}
+  </div>
+  <div class="meta">
+    <span class="eyebrow">{d.kind}</span>
+    <span class="mono">{d.venue ?? d.status ?? d.period}</span>
+  </div>
+  <h3 class="serif">{d.title}</h3>
+  <p>{d.tagline}</p>
+</a>
+
+<style>
+  .pc { display: flex; flex-direction: column; gap: 8px; }
+  .thumb { margin: -32px -32px 8px; aspect-ratio: 16 / 9; background: #fff; overflow: hidden; border-bottom: 1px solid var(--line); }
+  .thumb img { width: 100%; height: 100%; object-fit: contain; padding: 14px; filter: saturate(0.75) sepia(0.08); transition: transform 0.6s ease; }
+  .thumb.blank { background: var(--card-2); display: flex; align-items: flex-end; padding: 16px 18px; background-image: radial-gradient(var(--line) 1px, transparent 1px); background-size: 14px 14px; }
+  .glyph { font-size: 34px; line-height: 1; color: var(--muted); letter-spacing: -0.03em; opacity: 0.7; }
+  .pc:hover .thumb img { transform: scale(1.03); }
+  .meta { display: flex; justify-content: space-between; align-items: baseline; }
+  .mono { font-family: var(--sans); font-size: 11px; color: var(--muted); }
+  h3 { font-size: 19px; margin: 0; }
+  p { margin: 0; font-size: 13px; color: var(--ink-2); }
+</style>

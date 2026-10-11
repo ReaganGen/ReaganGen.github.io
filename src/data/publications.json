@@ -1,0 +1,65 @@
+[
+  {
+    "id": "lumi-lab",
+    "title": "LUMI-lab: A foundation model-driven autonomous platform enabling discovery of ionizable lipid designs for mRNA delivery",
+    "authors": "Xu, Y.*, Cui, H.*, Pang, K.†, Li, G.†, Gong, F.†, Dong, S., Wang, B., Li, B.",
+    "venue": "Cell",
+    "year": 2026,
+    "role": "Equal contribution",
+    "links": [
+      { "label": "Paper", "href": "https://www.cell.com/cell/abstract/S0092-8674(26)00099-1" },
+      { "label": "Code", "href": "https://github.com/bowenli-lab/LUMI-lab" }
+    ]
+  },
+  {
+    "id": "rnaopt",
+    "title": "RNAOpt: Co-design of mRNA functional regions via inference-time parallel reasoning",
+    "authors": "Li, G.*, Luozhong, S.*, Cui, H.*, Thomson, T., Man, J., Liu, Y., Zhang, P., Zhou, Z., Dong, S., Zhou, M., Fu, X., Gong, F., Li, B.",
+    "venue": "Nature Computational Science",
+    "year": 2026,
+    "role": "First author",
+    "status": "In revision",
+    "links": [{ "label": "Code", "href": "https://github.com/bowenli-lab/RNAOpt" }]
+  },
+  {
+    "id": "molea",
+    "title": "A multiobjective AI model for LNP engineering enhances tissue-selective mRNA delivery",
+    "authors": "Zhou, M.*, Xu, Y.*, Li, G.*, Chen, J., Savguira, M., Seto, B., Gong, F., Thomson, T., Chen, J., Lu, R. X., Dong, S., Chen, D., Eileen, C., Wu, S., Zheng, G., Li, B.",
+    "venue": "Nature Biotechnology",
+    "year": 2026,
+    "role": "Co-first author",
+    "links": [
+      { "label": "Paper", "href": "https://www.nature.com/articles/s41587-026-03109-0" },
+      { "label": "Code", "href": "https://github.com/bowenli-lab/MOLEA" }
+    ]
+  },
+  {
+    "id": "crispr-review",
+    "title": "Harnessing artificial intelligence to advance CRISPR-based genome editing technologies",
+    "authors": "Thomson, T., Li, G., Strilchuk, A., Cui, H., Wang, B., Li, B.",
+    "venue": "Nature Reviews Genetics",
+    "year": 2025,
+    "role": "Second author",
+    "links": [{ "label": "Paper", "href": "https://www.nature.com/articles/s41576-025-00907-1" }]
+  },
+  {
+    "id": "down-syndrome",
+    "title": "Molecular cartography of the human Down syndrome and trisomic mouse brain",
+    "authors": "Feng, M. Y., Cao, W., Tahmasian, N., Kukreja, B., Li, G., Rusu, B., Youn, J.-Y., Kalish, B. T.",
+    "venue": "Nature Communications",
+    "year": 2025,
+    "links": [{ "label": "Paper", "href": "https://www.nature.com/articles/s41467-025-63752-0" }]
+  },
+  {
+    "id": "3utrbert",
+    "title": "Deciphering 3′UTR-mediated gene regulation using interpretable deep representation learning",
+    "authors": "Yang, Y.*, Li, G.*, Pang, K., Cao, W., Zhang, Z., Li, X.",
+    "venue": "Advanced Science",
+    "year": 2024,
+    "role": "Co-first author",
+    "links": [
+      { "label": "Paper", "href": "https://advanced.onlinelibrary.wiley.com/doi/10.1002/advs.202407013" },
+      { "label": "Code", "href": "https://github.com/yangyn533/3UTRBERT" }
+    ]
+  }
+]

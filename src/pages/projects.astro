@@ -1,0 +1,58 @@
+---
+import { getCollection, render } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import ModelViewer from '../components/ModelViewer.astro';
+
+const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
+const rendered = await Promise.all(projects.map(async (p) => ({ p, Content: (await render(p)).Content })));
+---
+<Base title="Projects" description="Research, agent and lab-automation projects.">
+  <section class="wrap head">
+    <div class="eyebrow reveal">Projects</div>
+    <h1 class="serif reveal">Models, agents and machines.</h1>
+  </section>
+
+  <section class="wrap list">
+    {rendered.map(({ p, Content }) => (
+      <article id={p.id} class="card proj reveal">
+        <div class="side">
+          <div class="eyebrow">{p.data.kind}</div>
+          <h2 class="serif">{p.data.title}</h2>
+          <div class="mono">{p.data.period}{p.data.venue && ` · ${p.data.venue}`}{p.data.status && ` · ${p.data.status}`}</div>
+          <p class="tagline">{p.data.tagline}</p>
+          {p.data.stack.length > 0 && <div class="stack">{p.data.stack.map((s) => <span class="tag">{s}</span>)}</div>}
+          <div class="links">{p.data.links.map((l) => <a class="pill" href={l.href} target="_blank" rel="noopener">{l.label} ↗</a>)}</div>
+        </div>
+        <div class="main">
+          {p.id === 'lumi-lab' && <div class="media media-3d"><ModelViewer src="/models/lumi-lab.glb" title="LUMI-lab platform" tag="Hardware · Cell 2026" /></div>}
+          {p.id !== 'lumi-lab' && p.data.image && <div class="media"><img src={p.data.image} alt={`${p.data.title} overview figure`} loading="lazy" /></div>}
+          <div class="body"><Content /></div>
+        </div>
+      </article>
+    ))}
+  </section>
+</Base>
+
+<style>
+  .head { padding-top: 56px; padding-bottom: 24px; }
+  h1 { font-size: clamp(26px, 3.4vw, 34px); font-weight: 500; margin: 10px 0 0; letter-spacing: -0.03em; line-height: 1.05; }
+  .list { display: flex; flex-direction: column; gap: 12px; }
+  .proj { display: grid; grid-template-columns: 250px minmax(0, 1fr); gap: 28px; padding: 28px; scroll-margin-top: 72px; }
+  h2 { font-size: 26px; margin: 6px 0 4px; }
+  .mono { font-family: var(--sans); font-size: 12px; color: var(--muted); }
+  .tagline { color: var(--ink-2); font-size: 14px; }
+  .stack { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
+  .links { display: flex; flex-wrap: wrap; gap: 8px; }
+  .links .pill { font-size: 13px; padding: 6px 12px; background: var(--paper); }
+  .media { border-radius: var(--radius-md); overflow: hidden; background: #fff; margin-bottom: 18px; border: 1px solid var(--line); }
+  .media img { width: 100%; filter: saturate(0.8); }
+  .media.media-3d { background: transparent; height: 320px; }
+  .body { font-size: 14px; color: var(--ink-2); }
+  .body :global(ul) { padding-left: 18px; margin: 0; }
+  .body :global(li) { margin-bottom: 8px; }
+  .body :global(strong) { color: var(--ink); font-weight: 500; }
+  @media (max-width: 860px) {
+    .proj { grid-template-columns: 1fr; gap: 20px; padding: 22px; }
+    .media.media-3d { height: 300px; }
+  }
+</style>

@@ -1,0 +1,43 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+
+const posts = (await getCollection('blog', (p) => !p.data.draft)).sort((a, b) => +b.data.date - +a.data.date);
+const fmt = (d: Date) => d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+---
+<Base title="Blog" description="Technical notes on AI for biology, agents and lab automation.">
+  <section class="wrap head">
+    <div class="eyebrow reveal">Writing</div>
+    <h1 class="serif reveal">Notes from the lab and the GPU.</h1>
+  </section>
+  <section class="wrap">
+    <ul>
+      {posts.map((p) => (
+        <li class="reveal">
+          <a href={`/blog/${p.id}/`}>
+            <span class="date mono">{fmt(p.data.date)}</span>
+            <span class="t">
+              <span class="title serif">{p.data.title}</span>
+              <span class="desc">{p.data.description}</span>
+            </span>
+            <span class="tags">{p.data.tags.map((t) => <span class="tag">{t}</span>)}</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </section>
+</Base>
+
+<style>
+  .head { padding-top: 56px; padding-bottom: 16px; }
+  h1 { font-size: clamp(26px, 3.4vw, 34px); font-weight: 500; margin: 10px 0 0; letter-spacing: -0.03em; line-height: 1.05; max-width: 12em; }
+  ul { list-style: none; margin: 24px 0 0; padding: 0; }
+  li a { display: grid; grid-template-columns: 96px minmax(0, 1fr) auto; gap: 18px; padding: 18px 0; border-top: 1px solid var(--line); align-items: baseline; }
+  li a:hover .title { color: var(--accent); }
+  .mono { font-family: var(--sans); font-size: 12px; color: var(--muted); }
+  .t { display: flex; flex-direction: column; gap: 4px; }
+  .title { font-size: 19px; transition: color 0.2s; }
+  .desc { color: var(--ink-2); font-size: 14px; }
+  .tags { display: flex; gap: 6px; }
+  @media (max-width: 720px) { li a { grid-template-columns: 1fr; gap: 6px; } }
+</style>

@@ -1,0 +1,7 @@
+node_modules/
+dist/
+.astro/
+.DS_Store
+# raw CAD exports (too large for git)
+/raw/
+*.raw.glb

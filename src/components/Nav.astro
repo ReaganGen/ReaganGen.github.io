@@ -1,0 +1,57 @@
+---
+const links = [
+  { href: '/', label: 'Home' },
+  { href: '/projects/', label: 'Work', dot: true },
+  { href: '/blog/', label: 'Writing' },
+  { href: '/contact/', label: 'Contact' },
+];
+const path = Astro.url.pathname;
+const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWith(href));
+---
+<header class="nav">
+  <nav aria-label="Main">
+    {links.map((l) => (
+      <a href={l.href} class:list={{ active: isActive(l.href) }} aria-current={isActive(l.href) ? 'page' : undefined}>
+        {l.dot && <span class="dot" aria-hidden="true" />}{l.label}
+      </a>
+    ))}
+    <button id="theme" aria-label="Toggle color theme">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8" /><path d="M12 4a8 8 0 0 0 0 16z" fill="currentColor" /></svg>
+    </button>
+  </nav>
+</header>
+
+<style>
+  .nav { position: sticky; top: 16px; z-index: 50; display: flex; justify-content: center; padding: 0 16px; margin-top: 16px; }
+  nav {
+    display: flex; align-items: center; gap: 2px; padding: 5px;
+    border-radius: 999px; border: 0;
+    background: var(--glass);
+    backdrop-filter: blur(28px) saturate(190%) brightness(1.04);
+    -webkit-backdrop-filter: blur(28px) saturate(190%) brightness(1.04);
+    box-shadow:
+      inset 0 0 0 1px var(--glass-rim),
+      inset 0 1.5px 1px -0.5px var(--glass-spec),
+      inset 0 -1px 1px -0.5px var(--glass-under),
+      0 8px 24px -12px var(--glass-shade);
+  }
+  a, button {
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 8px 18px; border-radius: 999px; font-size: 14px; color: var(--muted);
+    transition: color 0.2s, background 0.2s;
+  }
+  a:hover, button:hover { color: var(--ink); }
+  a.active { background: color-mix(in srgb, var(--ink) 7%, transparent); color: var(--ink); font-weight: 500; }
+  button { background: none; border: 0; cursor: pointer; padding: 8px 12px; }
+  @media (max-width: 480px) { a { padding: 7px 11px; font-size: 13px; } .dot { display: none; } }
+</style>
+
+<script>
+  document.getElementById('theme')?.addEventListener('click', () => {
+    const root = document.documentElement;
+    const dark = root.dataset.theme ? root.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+    root.dataset.theme = dark ? 'light' : 'dark';
+    try { localStorage.setItem('theme', root.dataset.theme); } catch {}
+    window.dispatchEvent(new Event('themechange'));
+  });
+</script>

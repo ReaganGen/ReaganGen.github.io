@@ -1,0 +1,154 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import ProjectIcon from './ProjectIcon.astro';
+
+interface Props { projects: CollectionEntry<'projects'>[] }
+const { projects } = Astro.props;
+const peek = projects.map((p) => ({
+  id: p.id,
+  title: p.data.title,
+  tagline: p.data.tagline,
+  meta: [p.data.kind, p.data.venue ?? p.data.status ?? p.data.period].filter(Boolean).join(' · '),
+  image: p.data.image ?? '',
+}));
+---
+<section class="card dock reveal" aria-labelledby="dock-h">
+  <div class="top">
+    <h2 class="eyebrow" id="dock-h">Projects</h2>
+    <span class="nudge">Hover an icon for details</span>
+  </div>
+
+  <div class="peek" id="peek">
+    <div class="shot" id="peek-shot"></div>
+    <div class="txt">
+      <span class="meta" id="peek-meta"></span>
+      <b id="peek-title"></b>
+      <span class="sub" id="peek-tag"></span>
+    </div>
+  </div>
+  <i class="caret" id="caret" aria-hidden="true"></i>
+
+  <div class="tray" role="list">
+    {projects.map((p) => (
+      <a class="tile" role="listitem" href={`/projects/#${p.id}`} data-id={p.id} aria-label={p.data.title}>
+        <ProjectIcon id={p.id} />
+      </a>
+    ))}
+  </div>
+
+  <a class="go" href="/projects/" aria-label="See all projects"><span aria-hidden="true">↗</span></a>
+</section>
+
+<style>
+  .dock { position: relative; padding: 24px 24px 22px; }
+  .top { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+  .nudge { font-size: 11px; color: var(--muted); transition: opacity 0.2s; }
+
+  .peek {
+    display: flex; gap: 14px; align-items: center;
+    margin: 14px 0 0; padding: 12px;
+    background: var(--paper); border-radius: 16px;
+    box-shadow: inset 0 0 0 1px var(--line);
+  }
+  .peek > * { transition: opacity 0.18s; }
+  .peek.swap > * { opacity: 0; }
+  .shot {
+    width: 110px; height: 66px; flex: none; border-radius: 10px;
+    background: var(--card-2) center/cover no-repeat;
+    background-image: radial-gradient(var(--line) 1px, transparent 1px); background-size: 9px 9px;
+  }
+  .txt { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+  .meta { font-size: 11px; color: var(--accent); letter-spacing: 0.04em; text-transform: uppercase; }
+  .txt b { font-size: 16px; font-weight: 500; color: var(--ink); }
+  .sub { font-size: 13px; color: var(--ink-2); }
+
+  .caret {
+    position: absolute; width: 11px; height: 11px; rotate: 45deg;
+    background: var(--paper); border-right: 1px solid var(--line); border-bottom: 1px solid var(--line);
+    border-radius: 0 0 2px 0; transform: translateX(-50%);
+    transition: left 0.28s cubic-bezier(0.2, 0.9, 0.25, 1);
+  }
+
+  .tray {
+    display: flex; gap: 6px; flex-wrap: wrap; margin-top: 18px;
+    padding: 8px; border-radius: 20px; background: var(--paper);
+    box-shadow: inset 0 0 0 1px var(--line);
+  }
+  .tile {
+    width: 56px; height: 56px; padding: 9px; border-radius: 16px;
+    color: var(--icon); opacity: 0.75;
+    transition: transform 0.24s cubic-bezier(0.2, 0.9, 0.25, 1), opacity 0.2s, background 0.2s;
+  }
+  .tile:hover, .tile:focus-visible, .tile.on {
+    transform: translateY(-4px);
+    opacity: 1;
+    background: color-mix(in srgb, var(--icon) 9%, transparent);
+  }
+  .tile:focus-visible { outline: 2px solid var(--icon); outline-offset: 2px; }
+
+  .go {
+    display: grid; place-items: center; width: 34px; height: 34px; margin-top: 16px;
+    border-radius: 50%; color: var(--ink-2); font-size: 13px;
+    box-shadow: inset 0 0 0 1px var(--line);
+    transition: transform 0.25s, color 0.2s, box-shadow 0.2s;
+  }
+  .go:hover { color: var(--ink); transform: rotate(45deg); box-shadow: inset 0 0 0 1px var(--muted); }
+
+  @media (max-width: 560px) {
+    .dock { padding: 20px; }
+    .shot { width: 78px; height: 56px; }
+    .tile { width: 48px; height: 48px; padding: 8px; }
+  }
+</style>
+
+<script define:vars={{ peek }}>
+  const dock = document.querySelector('.dock');
+  if (dock) {
+    const box = document.getElementById('peek');
+    const caret = document.getElementById('caret');
+    const shot = document.getElementById('peek-shot');
+    const els = {
+      meta: document.getElementById('peek-meta'),
+      title: document.getElementById('peek-title'),
+      tag: document.getElementById('peek-tag'),
+    };
+    const tiles = [...dock.querySelectorAll('.tile')];
+    const byId = Object.fromEntries(peek.map((p) => [p.id, p]));
+    let current = null;
+
+    const place = (tile) => {
+      const r = tile.getBoundingClientRect();
+      const d = dock.getBoundingClientRect();
+      caret.style.left = `${r.left - d.left + r.width / 2}px`;
+      caret.style.top = `${box.offsetTop + box.offsetHeight - 5}px`;
+    };
+
+    const fill = (p) => {
+      els.meta.textContent = p.meta;
+      els.title.textContent = p.title;
+      els.tag.textContent = p.tagline;
+      shot.style.backgroundImage = p.image
+        ? `url("${p.image}")`
+        : 'radial-gradient(var(--line) 1px, transparent 1px)';
+      shot.style.backgroundSize = p.image ? 'cover' : '9px 9px';
+    };
+
+    const show = (tile, instant) => {
+      if (current === tile) return;
+      current = tile;
+      tiles.forEach((t) => t.classList.toggle('on', t === tile));
+      place(tile);
+      const p = byId[tile.dataset.id];
+      if (instant) return fill(p);
+      box.classList.add('swap');
+      setTimeout(() => { fill(p); box.classList.remove('swap'); }, 150);
+    };
+
+    for (const tile of tiles) {
+      tile.addEventListener('pointerenter', () => show(tile));
+      tile.addEventListener('focus', () => show(tile));
+    }
+    show(tiles[0], true);
+    addEventListener('resize', () => current && place(current));
+  }
+</script>
