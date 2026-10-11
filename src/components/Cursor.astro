@@ -22,13 +22,10 @@
     pointer-events: none;
     z-index: 9999;
     opacity: 0;
-    scale: 1;
     will-change: transform;
-    transition: scale 0.13s cubic-bezier(0.2, 0.9, 0.3, 1.3);
   }
   #cursor:popover-open { display: block; }
   :global(html.has-cursor) #cursor { opacity: 1; }
-  :global(html.cursor-press) #cursor { scale: 1.45; }
   :global(html.cursor-none) #cursor { opacity: 0; }
 
   @media (hover: hover) and (pointer: fine) {
@@ -41,9 +38,6 @@
     :global(html.has-cursor a),
     :global(html.has-cursor img),
     :global(html.has-cursor svg) { -webkit-user-drag: none; user-select: none; }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    #cursor { transition: none; }
   }
 </style>
 
@@ -93,18 +87,11 @@
       { passive: true }
     );
 
-    addEventListener('pointerdown', (e) => {
-      if (e.pointerType === 'mouse') root.classList.add('cursor-press');
-    });
-    const release = () => root.classList.remove('cursor-press');
-    addEventListener('pointerup', release);
-    addEventListener('pointercancel', release);
     document.addEventListener('mouseleave', () => {
       shown = false;
       root.classList.remove('has-cursor');
     });
     addEventListener('blur', () => {
-      release();
       shown = false;
       root.classList.remove('has-cursor');
     });

@@ -39,6 +39,40 @@ const fullTitle = title ? `${title} · ${profile.name}` : profile.name;
         for (const e of entries) if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
       }, { rootMargin: '0px 0px -8% 0px' });
       document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
+
+      // Lift clickable cards on hover. Done in JS because the lift moves the
+      // card out from under the pointer: with :hover the card would drop,
+      // re-enter and shake. Here it only drops once the pointer leaves the
+      // card's resting box, which the lift never pulls away from it.
+      const LIFT = 3;
+      let lifted: HTMLElement | null = null;
+      const drop = () => {
+        lifted?.classList.remove('lift');
+        lifted = null;
+      };
+      addEventListener(
+        'pointermove',
+        (e) => {
+          if (e.pointerType !== 'mouse') return;
+          const card = (e.target as Element).closest?.('a.card, button.card') as HTMLElement | null;
+          if (card) {
+            if (card !== lifted) {
+              lifted?.classList.remove('lift');
+              card.classList.add('lift');
+              lifted = card;
+            }
+            return;
+          }
+          if (!lifted) return;
+          const r = lifted.getBoundingClientRect();
+          const inside =
+            e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom + LIFT;
+          if (!inside) drop();
+        },
+        { passive: true }
+      );
+      addEventListener('blur', drop);
+      addEventListener('scroll', drop, { passive: true });
     </script>
   </body>
 </html>
