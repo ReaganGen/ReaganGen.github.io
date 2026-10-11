@@ -19,7 +19,7 @@ const projects = defineCollection({
   schema: z.object({
     title: z.string(),
     tagline: z.string(),
-    kind: z.enum(['Research', 'Agent', 'Platform']),
+    kind: z.string(), // free text: shown as the small label above the title
     period: z.string(),
     order: z.number(),
     venue: z.string().optional(),

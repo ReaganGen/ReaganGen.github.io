@@ -23,6 +23,6 @@ export const socials = [
   { label: 'GitHub', href: 'https://github.com/ReaganGen' },
   { label: 'Scholar', href: 'https://scholar.google.com/citations?user=tgEXcfsAAAAJ' },
   // Paste your profile URL to switch this on:
-  // { label: 'LinkedIn', href: 'https://www.linkedin.com/in/YOUR-HANDLE/' },
+  { label: 'LinkedIn', href: 'https://www.linkedin.com/in/gen-reagan-li-40602a263/' },
   { label: 'Email', href: `mailto:${profile.email}` },
 ];

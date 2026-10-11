@@ -1,5 +1,5 @@
 ---
-title: GenLNP
+title: LNP #GenLNP
 tagline: "TODO — one-line summary"
 kind: Research
 period: 2025 – now

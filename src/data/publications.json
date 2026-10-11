@@ -12,14 +12,14 @@
     ]
   },
   {
-    "id": "rnaopt",
-    "title": "RNAOpt: Co-design of mRNA functional regions via inference-time parallel reasoning",
+    "id": "rna",
+    "title": "Secret",
     "authors": "Li, G.*, Luozhong, S.*, Cui, H.*, Thomson, T., Man, J., Liu, Y., Zhang, P., Zhou, Z., Dong, S., Zhou, M., Fu, X., Gong, F., Li, B.",
-    "venue": "Nature Computational Science",
+    "venue": "Secret",
     "year": 2026,
     "role": "First author",
-    "status": "In revision",
-    "links": [{ "label": "Code", "href": "https://github.com/bowenli-lab/RNAOpt" }]
+    "status": "Secret",
+    "links": [{ "label": "Code", "href": "https://www.google.com/?client=safari" }]
   },
   {
     "id": "molea",

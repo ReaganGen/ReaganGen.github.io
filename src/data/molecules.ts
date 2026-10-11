@@ -9,7 +9,6 @@ export type Molecule = {
 };
 
 export const molecules: Molecule[] = [
-  { name: 'SM-102', note: 'Benchmark ionizable lipid', src: '/models/sm102.sdf', tag: 'Reference' },
-  { name: 'DLin-MC3-DMA', note: 'First-generation clinical lipid', src: '/models/mc3.sdf', tag: 'Reference' },
-  { name: 'ALC-0315', note: 'Placeholder for a designed lipid', src: '/models/alc0315.sdf', tag: 'Reference' },
+  { name: 'K9', note: 'Lipid that transfect Chondrocyte rather than Hepatocyte', src: '/models/k9.sdf', tag: 'Reference' },
+  { name: 'R-CAR', note: 'Designed CAR mRNA', src: '/models/mc3.sdf', tag: 'Reference' },
 ];

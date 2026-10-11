@@ -1,7 +1,7 @@
 ---
-title: AgentSDL
+title: SDL
 tagline: "TODO — one-line summary"
-kind: Agent
+kind: A #Agent
 period: 2026 – now
 order: 2
 status: In progress
