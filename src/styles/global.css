@@ -181,7 +181,6 @@ img { max-width: 100%; display: block; }
   background: linear-gradient(168deg, var(--glass-sheen), transparent 42%);
 }
 a.card:hover {
-  transform: translateY(-2px);
   box-shadow:
     inset 0 0 0 1px var(--glass-rim),
     inset 0 1.5px 1px -0.5px var(--glass-spec),
@@ -202,7 +201,7 @@ a.card:hover {
   box-shadow: inset 0 0 0 1px var(--glass-rim), inset 0 1px 0.5px -0.5px var(--glass-spec), 0 1px 3px -1px var(--glass-shade);
   transition: box-shadow 0.25s, transform 0.25s;
 }
-.pill:hover { transform: translateY(-1px); box-shadow: inset 0 0 0 1px var(--glass-rim), inset 0 1px 0.5px -0.5px var(--glass-spec), 0 6px 14px -6px var(--glass-shade); }
+.pill:hover { box-shadow: inset 0 0 0 1px var(--glass-rim), inset 0 1px 0.5px -0.5px var(--glass-spec), 0 6px 14px -6px var(--glass-shade); }
 .pill.solid { background: var(--ink); color: var(--paper); box-shadow: 0 6px 16px -8px var(--glass-shade); }
 .tag {
   font-size: 11px; padding: 3px 8px;
@@ -218,7 +217,6 @@ a.card:hover {
 .reveal.in { opacity: 1; transform: none; }
 @media (prefers-reduced-motion: reduce) {
   .reveal { opacity: 1; transform: none; transition: none; }
-  a.card:hover { transform: none; }
 }
 
 .dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); vertical-align: middle; }

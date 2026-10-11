@@ -109,10 +109,14 @@ const peek = projects.map((p) => ({
   .tile {
     width: 56px; height: 56px; padding: 9px; border-radius: 16px;
     color: var(--icon); opacity: 0.75;
-    transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.2s, background 0.2s;
+    transition: opacity 0.2s, background 0.2s;
+  }
+  .tile :global(svg) { transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1); }
+  /* lift the glyph, never the hit box, or the pointer loses the tile and flickers */
+  .tile:hover :global(svg), .tile:focus-visible :global(svg), .tile.on :global(svg) {
+    transform: translateY(-4px);
   }
   .tile:hover, .tile:focus-visible, .tile.on {
-    transform: translateY(-4px);
     opacity: 1;
     background: color-mix(in srgb, var(--icon) 9%, transparent);
   }
@@ -122,9 +126,9 @@ const peek = projects.map((p) => ({
     display: grid; place-items: center; width: 34px; height: 34px; margin-top: 14px;
     border-radius: 50%; color: var(--ink-2); font-size: 13px;
     box-shadow: inset 0 0 0 1px var(--line);
-    transition: transform 0.25s, color 0.2s, box-shadow 0.2s;
+    transition: color 0.2s, box-shadow 0.2s;
   }
-  .go:hover { color: var(--ink); transform: rotate(45deg); box-shadow: inset 0 0 0 1px var(--muted); }
+  .go:hover { color: var(--ink); box-shadow: inset 0 0 0 1px var(--muted); }
 
   @media (prefers-reduced-motion: reduce) {
     .peek-wrap, .peek, .caret, .dock.open .peek-wrap, .dock.open .peek, .dock.open .caret { transition: none; }
