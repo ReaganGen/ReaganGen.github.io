@@ -8,8 +8,12 @@
 <style>
   #cursor {
     position: fixed;
+    inset: auto;
     left: 0;
     top: 0;
+    padding: 0;
+    border: 0;
+    overflow: visible;
     width: 22px;
     height: 22px;
     margin: -11px 0 0 -11px;
@@ -20,6 +24,7 @@
     opacity: 0;
     will-change: transform;
   }
+  #cursor:popover-open { display: block; }
   :global(html.has-cursor) #cursor { opacity: 1; }
   :global(html.cursor-none) #cursor { opacity: 0; }
 
@@ -39,6 +44,25 @@
   if (dot && fine.matches) {
     const root = document.documentElement;
     const text = 'input, textarea';
+
+    // A modal <dialog> paints in the top layer, above any z-index, so the dot
+    // has to live there too. Re-raising it keeps it above newly opened ones.
+    const raise = () => {
+      if (!('showPopover' in dot)) return;
+      try {
+        dot.hidePopover();
+      } catch {}
+      try {
+        dot.showPopover();
+      } catch {}
+    };
+    if ('showPopover' in dot) {
+      dot.setAttribute('popover', 'manual');
+      raise();
+      new MutationObserver((records) => {
+        if (records.some((r) => (r.target as HTMLDialogElement).open)) raise();
+      }).observe(document.body, { subtree: true, attributeFilter: ['open'] });
+    }
 
     addEventListener(
       'pointermove',
