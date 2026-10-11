@@ -174,22 +174,43 @@ export async function mountGLB(el: HTMLElement, src: string, opts: GLBOptions = 
     return done;
   };
 
+  // Hold the parts apart until the card is genuinely on screen, so the
+  // assembly plays for someone scrolling to it rather than finishing unseen.
+  let settled = !parts.length;
+  let playing = false;
+  for (const p of parts) p.node.position.copy(p.from);
+
   let visible = true;
   const vis = new IntersectionObserver(([e]) => (visible = e.isIntersecting));
   vis.observe(el);
 
-  let settled = !parts.length;
+  if (parts.length) {
+    const starter = new IntersectionObserver(
+      ([e]) => {
+        if (e.intersectionRatio < 0.2) return;
+        starter.disconnect();
+        t0 = 0;
+        playing = true;
+      },
+      { threshold: 0.2 }
+    );
+    starter.observe(el);
+  }
+
   renderer.setAnimationLoop((now) => {
     if (!visible && settled) return;
-    if (!settled) settled = step(now);
+    if (!settled && playing) settled = step(now);
     controls.update();
     renderer.render(scene, camera);
   });
 
   return {
     replay() {
+      if (!parts.length) return;
+      for (const p of parts) p.node.position.copy(p.from);
       t0 = 0;
-      settled = !parts.length;
+      settled = false;
+      playing = true;
     },
     dispose() {
       ro.disconnect();
