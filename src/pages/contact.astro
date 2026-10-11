@@ -2,8 +2,7 @@
 import Base from '../layouts/Base.astro';
 import { profile, socials } from '../data/profile';
 const first = profile.name.split(' ')[0];
-const github = socials.find((s) => s.label === 'GitHub');
-const scholar = socials.find((s) => s.label === 'Scholar');
+const elsewhere = socials.filter((s) => !s.href.startsWith('mailto:'));
 ---
 <Base title="Contact" description={`Send ${profile.name} a message.`}>
   <section class="wrap page">
@@ -30,8 +29,7 @@ const scholar = socials.find((s) => s.label === 'Scholar');
         <div class="who"><b>Elsewhere</b><span class="mono">code and papers</span></div>
         <p class="note">Code lives on GitHub. Papers are on Google Scholar.</p>
         <div class="row">
-          {github && <a class="pill" href={github.href} target="_blank" rel="noopener">GitHub ↗</a>}
-          {scholar && <a class="pill" href={scholar.href} target="_blank" rel="noopener">Scholar ↗</a>}
+          {elsewhere.map((s) => <a class="pill" href={s.href} target="_blank" rel="noopener">{s.label} ↗</a>)}
         </div>
       </div>
     </div>
