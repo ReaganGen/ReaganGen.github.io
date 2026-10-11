@@ -4,13 +4,15 @@
 interface Props { photos: { src: string; caption?: string }[]; title?: string }
 const { photos, title = 'Album' } = Astro.props;
 ---
-{photos.length > 0 && (
-  <section class="card album reveal" aria-roledescription="carousel" aria-label={title}>
-    <div class="top">
-      <span class="eyebrow">{title}</span>
-      <span class="count"><b id="al-i">1</b> / {photos.length}</span>
-    </div>
+<section class="card album reveal" aria-roledescription="carousel" aria-label={title}>
+  <div class="top">
+    <span class="eyebrow">{title}</span>
+    {photos.length > 0 && <span class="count"><b id="al-i">1</b> / {photos.length}</span>}
+  </div>
 
+  {photos.length === 0 ? (
+    <div class="empty"><span>Photos coming soon</span></div>
+  ) : (
     <div class="strip" id="al-strip" tabindex="0">
       {photos.map((p, i) => (
         <figure class="slide" data-i={i}>
@@ -19,22 +21,25 @@ const { photos, title = 'Album' } = Astro.props;
         </figure>
       ))}
     </div>
+  )}
 
+  {photos.length > 1 && (
     <div class="dots" role="tablist" aria-label="Choose a photo">
       {photos.map((_, i) => (
         <button class:list={['dot', { on: i === 0 }]} data-go={i} role="tab" aria-label={`Photo ${i + 1}`} aria-selected={i === 0} />
       ))}
     </div>
-  </section>
-)}
+  )}
+</section>
 
 <style>
-  .album { padding: 22px 22px 18px; }
+  .album { padding: 22px 22px 18px; display: flex; flex-direction: column; }
   .top { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 12px; }
   .count { font-size: 11px; color: var(--muted); }
   .count b { color: var(--ink); font-weight: 500; }
 
   .strip {
+    flex: 1; min-height: 0;
     display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory;
     scrollbar-width: none; border-radius: 16px; outline: none;
   }
@@ -43,7 +48,7 @@ const { photos, title = 'Album' } = Astro.props;
 
   .slide { flex: 0 0 100%; scroll-snap-align: center; margin: 0; position: relative; }
   .slide img {
-    width: 100%; aspect-ratio: 16 / 10; object-fit: cover;
+    width: 100%; height: 100%; min-height: 190px; object-fit: cover;
     border-radius: 16px; background: var(--card-2); user-select: none;
   }
   figcaption {
@@ -51,6 +56,11 @@ const { photos, title = 'Album' } = Astro.props;
     font-size: 12px; color: #fff; text-shadow: 0 1px 6px rgba(0, 0, 0, 0.55);
   }
 
+  .empty {
+    flex: 1; min-height: 190px; display: grid; place-items: center;
+    border-radius: 16px; color: var(--muted); font-size: 13px;
+    background: radial-gradient(var(--line) 1px, transparent 1px) 0 0 / 9px 9px, var(--card-2);
+  }
   .dots { display: flex; justify-content: center; gap: 7px; margin-top: 14px; }
   .dot {
     width: 7px; height: 7px; padding: 0; border: 0; border-radius: 50%; cursor: pointer;
@@ -65,7 +75,8 @@ const { photos, title = 'Album' } = Astro.props;
   const strip = document.getElementById('al-strip');
   if (strip) {
     const slides = [...strip.querySelectorAll<HTMLElement>('.slide')];
-    const dots = [...document.querySelectorAll<HTMLButtonElement>('.dot')];
+    // scope to this album: `.dot` is also the nav's accent dot
+    const dots = [...strip.closest('.album')!.querySelectorAll<HTMLButtonElement>('.dot[data-go]')];
     const counter = document.getElementById('al-i')!;
 
     const mark = (i: number) => {
