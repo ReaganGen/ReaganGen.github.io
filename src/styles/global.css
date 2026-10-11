@@ -180,14 +180,6 @@ img { max-width: 100%; display: block; }
   pointer-events: none;
   background: linear-gradient(168deg, var(--glass-sheen), transparent 42%);
 }
-a.card:hover {
-  box-shadow:
-    inset 0 0 0 1px var(--glass-rim),
-    inset 0 1.5px 1px -0.5px var(--glass-spec),
-    inset 0 -1.5px 1px -0.5px var(--glass-under),
-    0 2px 6px -2px var(--glass-shade),
-    0 32px 60px -30px var(--glass-shade);
-}
 .card.inverse { background: var(--inverse-bg); color: var(--inverse-fg); }
 .card.inverse::before, .card.inverse::after { display: none; }
 .card.inverse .muted { color: color-mix(in srgb, var(--inverse-fg) 60%, transparent); }
@@ -199,9 +191,10 @@ a.card:hover {
   -webkit-backdrop-filter: blur(18px) saturate(180%);
   backdrop-filter: blur(18px) saturate(180%);
   box-shadow: inset 0 0 0 1px var(--glass-rim), inset 0 1px 0.5px -0.5px var(--glass-spec), 0 1px 3px -1px var(--glass-shade);
-  transition: box-shadow 0.25s, transform 0.25s;
+  color: var(--ink-2);
+  transition: color 0.2s;
 }
-.pill:hover { box-shadow: inset 0 0 0 1px var(--glass-rim), inset 0 1px 0.5px -0.5px var(--glass-spec), 0 6px 14px -6px var(--glass-shade); }
+.pill:hover { color: var(--ink); }
 .pill.solid { background: var(--ink); color: var(--paper); box-shadow: 0 6px 16px -8px var(--glass-shade); }
 .tag {
   font-size: 11px; padding: 3px 8px;
@@ -226,6 +219,5 @@ a.card:hover {
   border: 1px solid var(--line); background: var(--paper); color: var(--ink-2); font-size: 13px;
   transition: color 0.2s, border-color 0.2s, transform 0.3s;
 }
-a.card:hover .go { color: var(--ink); border-color: var(--muted); transform: rotate(45deg); }
 
 h1, h2, h3, h4 { color: var(--ink); }

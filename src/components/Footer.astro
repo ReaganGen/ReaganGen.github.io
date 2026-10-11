@@ -9,7 +9,7 @@ const onContact = Astro.url.pathname.startsWith('/contact');
         <div class="eyebrow">Say hello</div>
         <p class="big">Want to work together, or just talk science? Send me a message.</p>
       </div>
-      <span class="pill solid">Text me <span aria-hidden="true">↗</span></span>
+      <span class="pill solid">Text me <span class="arr" aria-hidden="true">↗</span></span>
     </a>
   )}
   <div class="fine">
@@ -24,6 +24,10 @@ const onContact = Astro.url.pathname.startsWith('/contact');
   footer { padding-top: 64px; padding-bottom: 32px; }
   .cta { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; flex-wrap: wrap; }
   .big { font-size: clamp(18px, 2.2vw, 21px); font-weight: 500; letter-spacing: -0.02em; line-height: 1.25; margin: 10px 0 0; max-width: 20em; }
+  .arr { display: inline-block; transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1); }
+  .cta:hover .arr { transform: translate(2px, -2px); }
+  .cta:hover .big { color: var(--ink); }
+  .big { transition: color 0.25s; }
   .fine { display: flex; justify-content: space-between; margin-top: 20px; font-size: 12px; color: var(--muted); font-family: var(--sans); flex-wrap: wrap; gap: 10px; }
   .links { display: flex; gap: 16px; }
   .links a:hover { color: var(--ink); }
